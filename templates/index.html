@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader Web App</title>
+</head>
+<body>
+    <h1>YouTube Downloader</h1>
+
+    <form id="downloadForm">
+        <label for="url">YouTube Video URL:</label>
+        <input type="text" id="url" name="url" required>
+
+        <label for="format">Format:</label>
+        <select id="format" name="format">
+            <option value="mp3">MP3</option>
+            <option value="mp4">MP4</option>
+        </select>
+
+        <button type="button" onclick="download()">Download</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function download() {
+            // Get values from the form
+            var url = document.getElementById("url").value;
+            var format = document.getElementById("format").value;
+
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Define the request method, URL, and whether it should be asynchronous
+            var apiUrl = "http://127.0.0.1:5000/download?url=" + encodeURIComponent(url) + "&format=" + encodeURIComponent(format);
+            xhr.open("GET", apiUrl, true);
+
+            // Define the callback function to handle the response
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    // Check if the status is OK (200)
+                    if (xhr.status === 200) {
+                        try {
+                            // Parse the JSON response
+                            var response = JSON.parse(xhr.responseText);
+
+                            // Display the result in the result div
+                            document.getElementById("result").innerHTML = "<p>Status: " + response.status + "</p><p>Message: " + response.message + "</p>";
+                        } catch (error) {
+                            console.error("Error parsing JSON response:", error);
+                        }
+                    } else {
+                        console.error("Request failed with status:", xhr.status);
+                    }
+                }
+            };
+
+            // Send the request
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
